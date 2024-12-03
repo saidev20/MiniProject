@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nutritionist Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 20px;
+            background-color: #f4f4f9;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        form {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        input[type="text"], input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            background: #007BFF;
+            color: #fff;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #0056b3;
+        }
+
+        #result {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>Nutritionist Dashboard</h1>
+
+    <form id="predictionForm">
+        <label for="FBPS">Fasting Blood Plasma Sugar (FBPS):</label>
+        <input type="number" id="FBPS" name="FBPS" required>
+
+        <label for="PPBS">Post-Prandial Blood Sugar (PPBS):</label>
+        <input type="number" id="PPBS" name="PPBS" required>
+
+        <label for="HbA1c">HbA1c:</label>
+        <input type="text" id="HbA1c" name="HbA1c" required>
+
+        <label for="LDL">LDL:</label>
+        <input type="number" id="LDL" name="LDL" required>
+
+        <label for="HDL">HDL:</label>
+        <input type="number" id="HDL" name="HDL" required>
+
+        <label for="triglycerides">Triglycerides:</label>
+        <input type="number" id="triglycerides" name="triglycerides" required>
+
+        <label for="BMI">BMI:</label>
+        <input type="text" id="BMI" name="BMI" required>
+
+        <label for="physical_activity">Physical Activity (1-5 scale):</label>
+        <input type="number" id="physical_activity" name="physical_activity" min="1" max="5" required>
+
+        <button type="submit">Get Diet Prediction</button>
+    </form>
+
+    <div id="result"></div>
+
+    <script>
+        document.getElementById('predictionForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const formData = new FormData(this);
+            const data = {};
+            formData.forEach((value, key) => {
+                data[key] = isNaN(value) ? value : parseFloat(value);
+            });
+
+            fetch('/predict', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.predicted_diet) {
+                    document.getElementById('result').innerText = `Predicted Diet Type: ${data.predicted_diet}`;
+                } else {
+                    document.getElementById('result').innerText = 'Error: ' + (data.message || 'Unexpected error occurred.');
+                }
+            })
+            .catch(error => {
+                document.getElementById('result').innerText = 'Error: ' + error;
+            });
+        });
+    </script>
+</body>
+</html>
