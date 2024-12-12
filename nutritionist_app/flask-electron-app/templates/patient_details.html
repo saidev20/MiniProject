@@ -55,6 +55,12 @@
             margin-top: 20px;
             font-weight: bold;
         }
+
+        #reasoning {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #555;
+        }
     </style>
 </head>
 <body>
@@ -89,6 +95,7 @@
     </form>
 
     <div id="result"></div>
+    <div id="reasoning"></div> <!-- Added to display the reasoning -->
 
     <script>
         document.getElementById('predictionForm').addEventListener('submit', function(event) {
@@ -111,6 +118,10 @@
             .then(data => {
                 if (data.predicted_diet) {
                     document.getElementById('result').innerText = `Predicted Diet Type: ${data.predicted_diet}`;
+
+                    // Display the reasoning in a readable format
+                    const reasoningList = data.reasoning.map(reason => `<li>${reason}</li>`).join('');
+                    document.getElementById('reasoning').innerHTML = `<ul>${reasoningList}</ul>`;
                 } else {
                     document.getElementById('result').innerText = 'Error: ' + (data.message || 'Unexpected error occurred.');
                 }
